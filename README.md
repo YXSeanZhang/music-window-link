@@ -1,4 +1,4 @@
-# Music Window Link
+# WindowLink for Apple Music and Lyricify Fusion
 
 一个 Windows 小工具，让 Microsoft Store 版 Apple Music 与 Lyricify Fusion 随窗口开关联动。
 
