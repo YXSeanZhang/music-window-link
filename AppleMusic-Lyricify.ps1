@@ -7,8 +7,9 @@ $ErrorActionPreference = 'Stop'
 $appleFamily = 'AppleInc.AppleMusicWin_nzyj5cx40ttqa'
 $fusionFamily = '63265WXRIW.193470E81A0DE_8ybqz4qm5hwha'
 $shortcutPath = Join-Path ([Environment]::GetFolderPath('Startup')) 'Apple Music - Lyricify Fusion.lnk'
-$powerShell = Join-Path $PSHOME 'powershell.exe'
-$watchArguments = '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "{0}" -Mode Watch' -f $PSCommandPath
+$scriptHost = Join-Path $env:SystemRoot 'System32\wscript.exe'
+$launcher = Join-Path $PSScriptRoot 'Start-Link.vbs'
+$launcherArguments = '"{0}"' -f $launcher
 
 if ($Mode -eq 'Disable') {
     if (Test-Path -LiteralPath $shortcutPath) {
@@ -26,13 +27,15 @@ if ($Mode -eq 'Enable') {
         }
     }
 
+    if (-not (Test-Path -LiteralPath $launcher -PathType Leaf)) { throw 'Keep Start-Link.vbs next to this script.' }
+
     $shell = New-Object -ComObject WScript.Shell
     $shortcut = $shell.CreateShortcut($shortcutPath)
-    $shortcut.TargetPath = $powerShell
-    $shortcut.Arguments = $watchArguments
+    $shortcut.TargetPath = $scriptHost
+    $shortcut.Arguments = $launcherArguments
     $shortcut.WorkingDirectory = $PSScriptRoot
     $shortcut.Save()
-    Start-Process -FilePath $powerShell -ArgumentList $watchArguments -WindowStyle Hidden
+    Start-Process -FilePath $scriptHost -ArgumentList $launcherArguments -WindowStyle Hidden
     Write-Host 'Link enabled for this Windows account.'
     return
 }
